@@ -42,8 +42,16 @@
                 </div>
                 <div class="mb-3 row">
                     <label class="col-sm-2 col-form-label"></label>
-                    <div class="col-sm-10"><button type="button" class="btn btn-primary" name="submit"
-                            wire:click="store()">SIMPAN</button>
+                    <div class="col-sm-10">
+                        @if ($updateData == false)
+                            <button type="button" class="btn btn-primary" name="submit"
+                                wire:click="store()">SIMPAN</button>
+                        @else
+                            <button type="button" class="btn btn-primary" name="submit"
+                                wire:click="update()">UPDATE</button>
+                        @endif
+                        <button type="button" class="btn btn-secondary" name="submit"
+                            wire:click="clear()">CLEAR</button>
                     </div>
                 </div>
             </form>
@@ -53,6 +61,9 @@
         <!-- START DATA -->
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <h1>Data Pegawai</h1>
+            <div class="pt-3">
+                <input type="text" class="form-control mb-3 w-25" placeholder="Search.." wire:model.live="keyword">
+            </div>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -71,8 +82,8 @@
                             <td>{{ $item->email }}</td>
                             <td>{{ $item->alamat }}</td>
                             <td>
-                                <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="" class="btn btn-danger btn-sm">Del</a>
+                                <a wire:click="edit({{ $item->id }})" class="btn btn-warning btn-sm">Edit</a>
+                                <a wire:click="deleteconfirm({{ $item->id }})" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Del</a>
                             </td>
                         </tr>
                     @endforeach
@@ -81,5 +92,23 @@
             {{ $dataEmployees->links() }}
         </div>
         <!-- AKHIR DATA -->
+        <!-- Modal -->
+        <div wire:ignore.self class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi Delete</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Yakin akan mengahpus Data?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" wire:click="delete()">Iya</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
