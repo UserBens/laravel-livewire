@@ -16,6 +16,9 @@ class Employee extends Component
     public $updateData = false;
     public $employee_id;
     public $keyword;
+    public $employee_selected_id = [];
+    public $sortColumn = 'nama';
+    public $sortDirection = 'asc';
 
 
     public function store()
@@ -70,6 +73,7 @@ class Employee extends Component
         $validated = $this->validate($rules, $messageerror);
 
         $data = ModelsEmployee::find($this->employee_id);
+
         $data->update($validated);
 
         session()->flash('message', 'Data Berhasil Diupdate');
@@ -82,22 +86,39 @@ class Employee extends Component
         $this->nama = '';
         $this->email = '';
         $this->alamat = '';
-
         $this->updateData = false;
         $this->employee_id = '';
+        $this->employee_selected_id = [];
     }
 
     public function delete()
     {
-        $id = $this->employee_id;
-        ModelsEmployee::find($id)->delete();
+        if ($this->employee_id != '') {
+            $id = $this->employee_id;
+            ModelsEmployee::find($id)->delete();
+        }
+
+        if (count($this->employee_selected_id)) {
+            for ($x = 0; $x < count($this->employee_selected_id); $x++) {
+                ModelsEmployee::find($this->employee_selected_id[$x])->delete();
+            }
+        }
+
         session()->flash('message', 'Data Berhasil Dihapus');
         $this->clear();
     }
 
     public function deleteconfirm($id)
     {
-        $this->employee_id = $id;
+        if ($id != '') {
+            $this->employee_id = $id;
+        }
+    }
+
+    public function sort($columnName)
+    {
+        $this->sortColumn = $columnName;
+        $this->sortDirection = $this->sortDirection == 'asc' ? 'desc' : 'asc';
     }
 
     public function render()
@@ -106,9 +127,9 @@ class Employee extends Component
             $data = ModelsEmployee::where('nama', 'like', '%' . $this->keyword . '%')
                 ->orwhere('email', 'like', '%' . $this->keyword . '%')
                 ->orwhere('alamat', 'like', '%' . $this->keyword . '%')
-                ->latest()->paginate(2);
+                ->orderby($this->sortColumn, $this->sortDirection)->paginate(2);
         } else {
-            $data = ModelsEmployee::latest()->paginate(2);
+            $data = ModelsEmployee::orderby($this->sortColumn, $this->sortDirection)->paginate(5);
         }
 
         return view('livewire.employee', ['dataEmployees' => $data]);

@@ -64,26 +64,36 @@
             <div class="pt-3">
                 <input type="text" class="form-control mb-3 w-25" placeholder="Search.." wire:model.live="keyword">
             </div>
-            <table class="table table-striped">
+
+            @if ($employee_selected_id)
+                <a wire:click="deleteconfirm('')" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">Delete {{ count($employee_selected_id) }}</a>
+            @endif
+
+            <table class="table table-striped table-sortable">
                 <thead>
                     <tr>
+                        <th class="col-md-1"></th>
                         <th class="col-md-1">No</th>
-                        <th class="col-md-4">Nama</th>
-                        <th class="col-md-3">Email</th>
-                        <th class="col-md-2">Alamat</th>
+                        <th class="col-md-4 sort @if($sortColumn == 'nama') {{ $sortDirection }} @endif" wire:click="sort('nama')">Nama</th>
+                        <th class="col-md-3 sort @if($sortColumn == 'email') {{ $sortDirection }} @endif" wire:click="sort('email')">Email</th>
+                        <th class="col-md-2 sort @if($sortColumn == 'alamat') {{ $sortDirection }} @endif" wire:click="sort('alamat')">Alamat</th>
                         <th class="col-md-2">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($dataEmployees as $key => $item)
                         <tr>
+                            <td><input type="checkbox" wire:key="{{ $item->id }}" value="{{ $item->id }}"
+                                    wire:model.live="employee_selected_id"></td>
                             <td>{{ $dataEmployees->firstItem() + $key }}</td>
                             <td>{{ $item->nama }}</td>
                             <td>{{ $item->email }}</td>
                             <td>{{ $item->alamat }}</td>
                             <td>
                                 <a wire:click="edit({{ $item->id }})" class="btn btn-warning btn-sm">Edit</a>
-                                <a wire:click="deleteconfirm({{ $item->id }})" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Del</a>
+                                <a wire:click="deleteconfirm({{ $item->id }})" class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal">Del</a>
                             </td>
                         </tr>
                     @endforeach
@@ -93,7 +103,8 @@
         </div>
         <!-- AKHIR DATA -->
         <!-- Modal -->
-        <div wire:ignore.self class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div wire:ignore.self class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -105,7 +116,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" wire:click="delete()">Iya</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            wire:click="delete()">Iya</button>
                     </div>
                 </div>
             </div>
